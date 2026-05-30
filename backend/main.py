@@ -11,6 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from backend.api.routes import router
+from backend.auth.routes import router as auth_router
 from backend.ingestion.vector_store import get_vector_store
 from backend.ingestion.embedder import get_embedder
 from backend.ingestion.scheduler import start_scheduler, stop_scheduler
@@ -47,16 +48,28 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS — allow the frontend (served from the same origin in prod; dev may differ)
+# CORS — credentials (cookies) require explicit origin list; wildcard + credentials is blocked by browsers
+from backend.config import settings as _settings
+
+_allowed_origins = list({
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    _settings.frontend_url.rstrip("/"),
+})
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_allowed_origins,
+    allow_credentials=True,          # Required for Set-Cookie to work cross-origin
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # API routes
 app.include_router(router)
+app.include_router(auth_router)
 
 # Serve frontend static files
 if FRONTEND_DIR.exists():

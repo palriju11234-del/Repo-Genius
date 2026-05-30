@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { AuthProvider } from './contexts/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { LoginPage } from './components/LoginPage';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { BackgroundVideo } from './components/BackgroundVideo';
@@ -9,8 +12,10 @@ import { AboutPage } from './components/AboutPage';
 import { ContactModal } from './components/ContactModal';
 import { mockRepositories, type Repository } from './mockData';
 
-function App() {
-  const [view, setView] = useState<'home' | 'about'>('home');
+type AppView = 'login' | 'home' | 'about';
+
+function AppShell() {
+  const [view, setView] = useState<AppView>('home');
   const [contactOpen, setContactOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
@@ -32,11 +37,14 @@ function App() {
     setHasSearched(true);
 
     // Resolve API URL dynamically to handle both direct serving (port 8000) and Vite dev server (port 5173)
-    const apiBase = window.location.port === '8000' ? '' : 'http://127.0.0.1:8000';
+    const apiBase = window.location.port === '8000'
+      ? ''
+      : `${window.location.protocol}//${window.location.hostname}:8000`;
 
     fetch(`${apiBase}/api/query`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ query: searchQuery, n_results: 30 }),
     })
       .then((res) => {
@@ -50,7 +58,6 @@ function App() {
           const documentation = Math.round(80 + rec.relevance_score * 15 - (idx * 3) % 10);
           const beginnerFriendliness = Math.round(65 + rec.relevance_score * 30 - (idx * 4) % 20);
 
-          // Use AI suitability from LLM if available, otherwise derive from score
           const difficulty: 'Beginner' | 'Intermediate' | 'Advanced' =
             (rec.ai_suitability as 'Beginner' | 'Intermediate' | 'Advanced') ||
             (rec.relevance_score > 0.85 ? 'Beginner' : rec.relevance_score > 0.65 ? 'Intermediate' : 'Advanced');
@@ -89,7 +96,6 @@ function App() {
             githubUrl: rec.url || `https://github.com/${rec.full_name}`,
             aiExplanation: rec.ai_insight || rec.description || 'No AI insight available.',
             aiDetails: rec.ai_advantages || [],
-            // Per-repo Groq AI insight fields
             aiInsight: rec.ai_insight || '',
             aiWhyItFits: rec.ai_why_it_fits || '',
             aiSuitability: rec.ai_suitability || difficulty,
@@ -102,7 +108,6 @@ function App() {
       })
       .catch((err) => {
         console.error('API Search Error:', err);
-        // Fallback to mock data so the app never crashes
         const fallback = mockRepositories.map(repo => ({
           ...repo,
           aiExplanation: `[DEMO MODE] ${repo.aiExplanation}`
@@ -117,6 +122,11 @@ function App() {
   const handleNavigate = (newView: 'home' | 'about') => {
     setView(newView);
   };
+
+  // Redirect to login when session expires / not authenticated
+  const handleNotAuthenticated = useCallback(() => {
+    setView('login');
+  }, []);
 
   // Real-time dynamic filter resolver
   const filteredRepositories = repositories.filter((repo) => {
@@ -135,80 +145,95 @@ function App() {
     return true;
   });
 
+  // Show login page
+  if (view === 'login') {
+    return <LoginPage />;
+  }
+
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-white flex flex-col justify-between">
+    <ProtectedRoute onNotAuthenticated={handleNotAuthenticated}>
+      <div className="relative min-h-screen w-full overflow-hidden bg-white flex flex-col justify-between">
 
-      {/* Background Video & Gradient Overlay Layer (z-0) */}
-      <BackgroundVideo />
+        {/* Background Video & Gradient Overlay Layer (z-0) */}
+        <BackgroundVideo />
 
-      {/* Navigation Bar (z-10) */}
-      <Navbar
-        currentView={view}
-        onNavigate={handleNavigate}
-        onReachUs={() => setContactOpen(true)}
-      />
+        {/* Navigation Bar (z-10) */}
+        <Navbar
+          currentView={view as 'home' | 'about'}
+          onNavigate={handleNavigate}
+          onReachUs={() => setContactOpen(true)}
+        />
 
-      {/* Main View Renderer */}
-      {view === 'home' ? (
-        <>
-          {/* Minimizable Hero Section (z-10) */}
-          <HeroSection
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            onSearch={handleSearch}
-            hasSearched={hasSearched}
-          />
+        {/* Main View Renderer */}
+        {view === 'home' ? (
+          <>
+            {/* Minimizable Hero Section (z-10) */}
+            <HeroSection
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              onSearch={handleSearch}
+              hasSearched={hasSearched}
+            />
 
-          {/* Interactive Search Results & Sidebar Section (z-10) */}
-          {hasSearched && (
-            <main className="relative z-10 w-full max-w-7xl mx-auto px-8 pb-32 animate-fade-rise">
-              <div className="flex flex-col md:flex-row gap-8 items-start">
+            {/* Interactive Search Results & Sidebar Section (z-10) */}
+            {hasSearched && (
+              <main className="relative z-10 w-full max-w-7xl mx-auto px-8 pb-32 animate-fade-rise">
+                <div className="flex flex-col md:flex-row gap-8 items-start">
 
-                {/* Left Hand Filters Sidebar */}
-                <FiltersSidebar
-                  filters={filters}
-                  onChange={setFilters}
-                />
+                  {/* Left Hand Filters Sidebar */}
+                  <FiltersSidebar
+                    filters={filters}
+                    onChange={setFilters}
+                  />
 
-                {/* Right Hand Repo Cards Grid */}
-                <ResultsGrid
-                  repositories={filteredRepositories}
-                  isLoading={isSearching}
-                  onSelectRepo={setSelectedRepo}
-                />
+                  {/* Right Hand Repo Cards Grid */}
+                  <ResultsGrid
+                    repositories={filteredRepositories}
+                    isLoading={isSearching}
+                    onSelectRepo={setSelectedRepo}
+                  />
 
-              </div>
-            </main>
-          )}
-        </>
-      ) : (
-        <AboutPage />
-      )}
+                </div>
+              </main>
+            )}
+          </>
+        ) : (
+          <AboutPage />
+        )}
 
-      {/* Slide-out AI Explanation & Radar Graph Side Panel (z-50) */}
-      <ExplanationPanel
-        repo={selectedRepo}
-        onClose={() => setSelectedRepo(null)}
-      />
+        {/* Slide-out AI Explanation & Radar Graph Side Panel (z-50) */}
+        <ExplanationPanel
+          repo={selectedRepo}
+          onClose={() => setSelectedRepo(null)}
+        />
 
-      {/* Center Floating Reach-Us Contact Card Modal (z-50) */}
-      <ContactModal
-        isOpen={contactOpen}
-        onClose={() => setContactOpen(false)}
-      />
+        {/* Center Floating Reach-Us Contact Card Modal (z-50) */}
+        <ContactModal
+          isOpen={contactOpen}
+          onClose={() => setContactOpen(false)}
+        />
 
-      {/* Premium Minimalist Footer (z-10) */}
-      <footer className="relative z-10 w-full px-8 py-6 text-center text-xs text-[#6F6F6F] font-sans border-t border-black/5 bg-white/40 backdrop-blur-sm select-none mt-auto">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p>© 2026 RepoGenius. Designing the future of semantic source discovery.</p>
-          <div className="flex gap-6">
-            <a href="#privacy" className="hover:text-black transition-colors">Privacy Policy</a>
-            <a href="#terms" className="hover:text-black transition-colors">Terms of Service</a>
+        {/* Premium Minimalist Footer (z-10) */}
+        <footer className="relative z-10 w-full px-8 py-6 text-center text-xs text-[#6F6F6F] font-sans border-t border-black/5 bg-white/40 backdrop-blur-sm select-none mt-auto">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p>© 2026 RepoGenius. Designing the future of semantic source discovery.</p>
+            <div className="flex gap-6">
+              <a href="#privacy" className="hover:text-black transition-colors">Privacy Policy</a>
+              <a href="#terms" className="hover:text-black transition-colors">Terms of Service</a>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
 
-    </div>
+      </div>
+    </ProtectedRoute>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppShell />
+    </AuthProvider>
   );
 }
 

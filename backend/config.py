@@ -31,6 +31,23 @@ class Settings(BaseSettings):
     # Scheduler
     ingestion_interval_hours: int = 24
 
+    # OAuth — Google
+    google_client_id: str = ""
+    google_client_secret: str = ""
+
+    # OAuth — GitHub (OAuth App, separate from PAT)
+    github_client_id: str = ""
+    github_client_secret: str = ""
+
+    # Session JWT
+    jwt_secret: str = "changeme-replace-this-with-a-secure-random-secret"
+
+    # Frontend origin (used for post-OAuth redirect)
+    frontend_url: str = "http://localhost:5173"
+
+    # Backend origin (used to build OAuth redirect URIs — must match registered callback URLs exactly)
+    backend_url: str = "http://127.0.0.1:8000"
+
     # Server
     host: str = "0.0.0.0"
     port: int = 8000
