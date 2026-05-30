@@ -14,6 +14,7 @@ Your response MUST be valid JSON in this exact format:
   "repos": [
     {
       "full_name": "owner/repo-name",
+      "brief_description": "One clear paragraph describing what this project does in plain English — written for a developer browsing search results.",
       "insight": "2-3 sentence explanation of what this project does and why it matches the user's query.",
       "why_it_fits": "One sentence on why it fits the query specifically.",
       "suitability": "Beginner" | "Intermediate" | "Advanced",
@@ -31,6 +32,7 @@ Your response MUST be valid JSON in this exact format:
 
 Rules:
 - Only include repos from the provided context. Do not invent repos.
+- brief_description must be a short paragraph, jargon-free, and understandable by any developer.
 - Keep each insight concise and developer-friendly.
 - Return ONLY the raw JSON — no markdown, no code fences, no extra text.
 """

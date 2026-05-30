@@ -80,6 +80,7 @@ def _parse_recommendations(llm_json: dict, results: list[dict]) -> list[dict[str
             "topics": [t for t in meta.get("topics", "").split(",") if t],
             "relevance_score": round(1 - r["distance"], 3),
             # Per-repo AI insights
+            "ai_brief_description": insight.get("brief_description", ""),
             "ai_insight": insight.get("insight", ""),
             "ai_why_it_fits": insight.get("why_it_fits", ""),
             "ai_suitability": insight.get("suitability", ""),

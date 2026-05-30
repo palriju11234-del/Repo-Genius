@@ -1,0 +1,517 @@
+/* ── RepoGenius Chrome Extension — Injected Content Styles ─────────────────── */
+
+/* All classes prefixed with .rg- to avoid collisions with GitHub's own CSS */
+
+.rg-sidebar {
+  background: rgba(13, 17, 23, 0.97);
+  border: 1.5px solid rgba(124, 58, 237, 0.35);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 24px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  box-shadow: 0 0 40px rgba(124, 58, 237, 0.12), 0 4px 24px rgba(0,0,0,0.5);
+  animation: rg-slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  color: #e6edf3;
+}
+
+.rg-sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #7c3aed, #a855f7, #7c3aed);
+  background-size: 200% 100%;
+  animation: rg-shimmer 2.5s linear infinite;
+}
+
+@keyframes rg-slide-in {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rg-shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* ── Sidebar Header ──────────────────────────────────────────────────── */
+.rg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.rg-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rg-brand-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+}
+
+.rg-brand-title {
+  font-size: 14px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.3px;
+}
+
+.rg-badge-ai {
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(124, 58, 237, 0.2);
+  color: #a855f7;
+  border: 1px solid rgba(124, 58, 237, 0.4);
+  border-radius: 20px;
+  padding: 2px 8px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.rg-close-btn {
+  background: transparent;
+  border: none;
+  color: #484f58;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.15s;
+  line-height: 1;
+}
+.rg-close-btn:hover { color: #e6edf3; }
+
+/* ── Profile Strip ───────────────────────────────────────────────────── */
+.rg-profile-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.8);
+}
+
+.rg-chip {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 20px;
+  border: 1px solid;
+}
+
+.rg-chip-exp {
+  background: rgba(124, 58, 237, 0.15);
+  color: #a855f7;
+  border-color: rgba(124, 58, 237, 0.35);
+}
+
+.rg-chip-goal {
+  background: rgba(63, 185, 80, 0.12);
+  color: #3fb950;
+  border-color: rgba(63, 185, 80, 0.3);
+}
+
+.rg-chip-lang {
+  background: rgba(56, 139, 253, 0.12);
+  color: #58a6ff;
+  border-color: rgba(56, 139, 253, 0.3);
+}
+
+/* ── Intent Line ─────────────────────────────────────────────────────── */
+.rg-intent {
+  font-size: 11px;
+  color: #8b949e;
+  margin-bottom: 14px;
+}
+
+.rg-intent strong {
+  color: #e6edf3;
+  font-weight: 600;
+}
+
+/* ── Section Title ───────────────────────────────────────────────────── */
+.rg-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #484f58;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+
+/* ── Repo Cards ──────────────────────────────────────────────────────── */
+.rg-repo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rg-repo-card {
+  background: rgba(22, 27, 34, 0.9);
+  border: 1.5px solid rgba(48, 54, 61, 0.8);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s, transform 0.15s;
+  text-decoration: none;
+  display: block;
+}
+
+.rg-repo-card:hover {
+  border-color: rgba(124, 58, 237, 0.5);
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.1);
+  transform: translateY(-1px);
+}
+
+.rg-repo-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.rg-rank-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.4);
+}
+
+.rg-repo-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: #a855f7;
+  text-decoration: none;
+  line-height: 1.3;
+}
+
+.rg-score-pill {
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(63, 185, 80, 0.15);
+  color: #3fb950;
+  border: 1px solid rgba(63, 185, 80, 0.3);
+  border-radius: 10px;
+  padding: 2px 7px;
+  flex-shrink: 0;
+}
+
+.rg-repo-desc {
+  font-size: 11.5px;
+  color: #8b949e;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.rg-repo-meta {
+  display: flex;
+  gap: 10px;
+  font-size: 11px;
+  color: #484f58;
+  margin-bottom: 8px;
+}
+
+.rg-stars::before { content: '⭐ '; }
+.rg-lang::before  { content: '◉ '; color: #a855f7; }
+.rg-suit::before  { content: '📊 '; }
+
+/* ── Explanation Card & AI Insights ──────────────────────────────────── */
+.rg-explain-toggle {
+  font-size: 11px;
+  color: #a855f7;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-family: inherit;
+  transition: color 0.15s;
+}
+.rg-explain-toggle:hover { color: #c084fc; }
+
+.rg-explain-card {
+  margin-top: 10px;
+  background: rgba(22, 27, 34, 0.95);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: none;
+  animation: rg-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.rg-explain-card.open { display: block; }
+
+.rg-insight-header {
+  font-size: 11px;
+  font-weight: 700;
+  color: #e6edf3;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.rg-insight-text {
+  font-size: 12px;
+  color: #c9d1d9;
+  line-height: 1.6;
+  margin: 0 0 12px 0;
+}
+
+/* ── Rich Card Blocks ── */
+.rg-insight-box {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-left: 3px solid rgba(168, 85, 247, 0.65); /* Purple accent */
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.rg-insight-box.rg-best-use-box {
+  border-left-color: rgba(234, 179, 8, 0.7); /* Gold/Target accent */
+  background: rgba(234, 179, 8, 0.015);
+}
+
+.rg-box-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: #8b949e;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.rg-why-fits-box .rg-box-title {
+  color: #c084fc; /* purple tint */
+}
+
+.rg-best-use-box .rg-box-title {
+  color: #eab308; /* yellow/gold tint */
+}
+
+.rg-box-text {
+  font-size: 11.5px;
+  color: #c9d1d9;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Two-Column Layout ── */
+.rg-insight-columns {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.rg-insight-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.rg-col-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.rg-advantages-col .rg-col-title {
+  color: #3fb950; /* Green */
+}
+
+.rg-disadvantages-col .rg-col-title {
+  color: #f85149; /* Red */
+}
+
+.rg-col-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rg-col-list li {
+  font-size: 11px;
+  line-height: 1.4;
+  color: #c9d1d9;
+  position: relative;
+  padding-left: 14px;
+}
+
+.rg-advantages-col .rg-col-list li::before {
+  content: '+';
+  position: absolute;
+  left: 0;
+  color: #3fb950;
+  font-weight: 700;
+}
+
+.rg-disadvantages-col .rg-col-list li::before {
+  content: '−';
+  position: absolute;
+  left: 0;
+  color: #f85149;
+  font-weight: 700;
+}
+
+/* ── Developer Profile Reasons ── */
+.rg-insight-reasons-section {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 14px;
+}
+
+.rg-insight-reasons-section .rg-box-title {
+  color: #58a6ff;
+  margin-bottom: 8px;
+}
+
+.rg-explain-reasons {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 0;
+  margin: 0;
+}
+
+.rg-explain-reasons li {
+  font-size: 11px;
+  line-height: 1.4;
+  color: #8b949e;
+}
+
+.rg-explain-reasons li.positive { color: #3fb950; }
+.rg-explain-reasons li.neutral  { color: #8b949e; }
+.rg-explain-reasons li.negative { color: #f85149; }
+
+/* ── Score Breakdown Bar ─────────────────────────────────────────────── */
+.rg-score-breakdown {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rg-score-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: #8b949e;
+}
+
+.rg-score-label { width: 90px; flex-shrink: 0; }
+
+.rg-score-bar-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(48, 54, 61, 0.8);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rg-score-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7c3aed, #a855f7);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.rg-score-val { width: 30px; text-align: right; }
+
+/* ── Actions ──────────────────────────────────────────────────────────── */
+.rg-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.rg-action-btn {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 4px 9px;
+  border-radius: 6px;
+  border: 1px solid rgba(48, 54, 61, 0.8);
+  background: transparent;
+  color: #8b949e;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.rg-action-btn:hover { border-color: #a855f7; color: #a855f7; }
+.rg-action-btn.active { background: rgba(124,58,237,0.15); color: #a855f7; border-color: #a855f7; }
+
+/* ── Footer Link ─────────────────────────────────────────────────────── */
+.rg-footer {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(48, 54, 61, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rg-footer-link {
+  font-size: 11px;
+  color: #a855f7;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+.rg-footer-link:hover { color: #c084fc; }
+
+.rg-footer-hint {
+  font-size: 10px;
+  color: #484f58;
+}
+
+/* ── Loading State ────────────────────────────────────────────────────── */
+.rg-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  color: #8b949e;
+  font-size: 12px;
+}
+
+.rg-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(48, 54, 61, 0.8);
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  animation: rg-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes rg-spin { to { transform: rotate(360deg); } }
