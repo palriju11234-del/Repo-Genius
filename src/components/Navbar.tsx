@@ -5,6 +5,7 @@ interface NavbarProps {
   currentView: 'home' | 'about';
   onNavigate: (view: 'home' | 'about') => void;
   onReachUs: () => void;
+  onAddExtension: () => void;
 }
 
 /* ── Provider badge icon ─────────────────────────────────────────────────── */
@@ -51,7 +52,7 @@ const Avatar = ({ src, name, size = 32 }: { src: string; name: string; size?: nu
 };
 
 /* ── Main Navbar ─────────────────────────────────────────────────────────── */
-export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onReachUs }) => {
+export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onReachUs, onAddExtension }) => {
   const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -132,6 +133,24 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onReach
           >
             Reach Us
           </a>
+
+          {/* ── Add to Chrome CTA ── */}
+          <button
+            onClick={onAddExtension}
+            className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95"
+            style={{
+              background: 'linear-gradient(135deg, #F59E0B, #D97706)',
+              color: 'white',
+              border: 'none',
+              boxShadow: '0 2px 12px rgba(245,158,11,0.35)',
+            }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+              <path d="M12 8v4m0 4h.01" />
+            </svg>
+            Add to Chrome
+          </button>
         </div>
 
         {/* Right side: Profile or CTA */}
@@ -248,6 +267,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onReach
           >
             Reach Us
           </a>
+
+          {/* Mobile Add to Chrome */}
+          <button
+            onClick={() => { onAddExtension(); setMobileMenuOpen(false); }}
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-full text-sm font-semibold cursor-pointer"
+            style={{
+              background: 'linear-gradient(135deg, #F59E0B, #D97706)',
+              color: 'white', border: 'none',
+              boxShadow: '0 2px 10px rgba(245,158,11,0.35)',
+            }}
+          >
+            🧩 Add to Chrome
+          </button>
 
           {user ? (
             /* Mobile profile section */

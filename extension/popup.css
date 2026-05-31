@@ -9,9 +9,9 @@
   --bg-card:       #161b22;
   --bg-surface:    #21262d;
   --border:        #30363d;
-  --accent:        #7c3aed;
-  --accent-light:  #a855f7;
-  --accent-glow:   rgba(124, 58, 237, 0.3);
+  --accent:        #D97706;
+  --accent-light:  #FBBF24;
+  --accent-glow:   rgba(217, 119, 6, 0.3);
   --text-primary:  #e6edf3;
   --text-secondary:#8b949e;
   --text-muted:    #484f58;
@@ -67,7 +67,7 @@ html, body {
 .logo-title {
   font-size: 18px;
   font-weight: 700;
-  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  background: linear-gradient(135deg, #FBBF24, #D97706);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -196,12 +196,12 @@ html, body {
 
 .opt-btn:hover {
   border-color: var(--accent);
-  background: rgba(124, 58, 237, 0.08);
+  background: rgba(217, 119, 6, 0.08);
 }
 
 .opt-btn.selected {
   border-color: var(--accent-light);
-  background: rgba(124, 58, 237, 0.15);
+  background: rgba(217, 119, 6, 0.15);
   box-shadow: 0 0 0 1px var(--accent);
 }
 
@@ -314,9 +314,9 @@ html, body {
 }
 
 .exp-badge {
-  background: rgba(124, 58, 237, 0.2);
+  background: rgba(217, 119, 6, 0.2);
   color: var(--accent-light);
-  border: 1px solid rgba(124, 58, 237, 0.4);
+  border: 1px solid rgba(217, 119, 6, 0.4);
 }
 
 .lang-badge {
@@ -395,7 +395,7 @@ html, body {
 
 .quick-result-card:hover {
   border-color: var(--accent);
-  background: rgba(124, 58, 237, 0.08);
+  background: rgba(217, 119, 6, 0.08);
 }
 
 .qrc-header {
@@ -480,13 +480,13 @@ html, body {
 
 .stat-item:hover {
   border-color: var(--accent);
-  background: rgba(124, 58, 237, 0.05);
+  background: rgba(217, 119, 6, 0.05);
 }
 
 .stat-item.active {
   border-color: var(--accent-light);
-  background: rgba(124, 58, 237, 0.12);
-  box-shadow: 0 0 8px rgba(124, 58, 237, 0.15);
+  background: rgba(217, 119, 6, 0.12);
+  box-shadow: 0 0 8px rgba(217, 119, 6, 0.15);
 }
 
 .stat-item span {
@@ -551,7 +551,7 @@ html, body {
 
 .collection-card:hover {
   border-color: var(--accent);
-  background: rgba(124, 58, 237, 0.06);
+  background: rgba(217, 119, 6, 0.06);
 }
 
 .collection-info {

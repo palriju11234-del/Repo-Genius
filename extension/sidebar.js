@@ -44,22 +44,31 @@ function trackInteraction(repo, action, query) {
 // ── Insert Sidebar into GitHub DOM ────────────────────────────────────────────
 
 function findInsertionPoint() {
-  // Primary: the search results list container
+  // Try selectors in order from most specific to most general
+  // GitHub's DOM changes frequently — keep this list up to date
   const selectors = [
+    // New GitHub search UI (2024+)
     '[data-testid="results-list"]',
-    '.search-results-container .Box',
+    '.search-results-container',
+    // Older GitHub layouts
     '.search-results .Box',
     'div[aria-label="Search results"]',
     '#search-results',
     '.codesearch-results',
+    // Generic fallbacks
     'main div.container-xl',
+    'main > div',
     'main',
   ];
 
   for (const sel of selectors) {
     const el = document.querySelector(sel);
-    if (el) return el;
+    if (el) {
+      console.log('[RepoGenius] Insertion point found:', sel);
+      return el;
+    }
   }
+  console.warn('[RepoGenius] No insertion point found — sidebar cannot inject');
   return null;
 }
 
