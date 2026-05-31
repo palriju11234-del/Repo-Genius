@@ -58,6 +58,17 @@ def query_repos(req: QueryRequest):
     """
     Submit a natural language query and receive AI-powered repository recommendations.
     """
+    clean_query = req.query.strip()
+    if not clean_query:
+        raise HTTPException(status_code=400, detail="Query cannot be empty.")
+    
+    words = clean_query.split()
+    if len(words) == 1:
+        raise HTTPException(
+            status_code=400,
+            detail="Explain your query in two or more words."
+        )
+
     try:
         from backend.query.rag_engine import get_rag_engine
         engine = get_rag_engine()

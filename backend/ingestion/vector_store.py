@@ -108,6 +108,37 @@ class VectorStore:
     def count(self) -> int:
         return self._collection.count()
 
+    def delete_old_repositories(self, max_age_hours: int) -> int:
+        """
+        Delete chunks of repositories indexed more than max_age_hours ago.
+        Returns the number of deleted chunks.
+        """
+        if self.count() == 0:
+            return 0
+
+        import time
+        now = time.time()
+        max_age_seconds = max_age_hours * 3600
+        
+        result = self._collection.get(include=["metadatas"])
+        ids_to_delete = []
+
+        for doc_id, meta in zip(result["ids"], result["metadatas"]):
+            indexed_at = meta.get("indexed_at")
+            if indexed_at is not None:
+                try:
+                    age = now - float(indexed_at)
+                    if age > max_age_seconds:
+                        ids_to_delete.append(doc_id)
+                except (ValueError, TypeError):
+                    continue
+
+        if ids_to_delete:
+            self._collection.delete(ids=ids_to_delete)
+            logger.info(f"Deleted {len(ids_to_delete)} old chunks from vector store.")
+            return len(ids_to_delete)
+        return 0
+
 
 # ------------------------------------------------------------------ #
 #  Helpers                                                             #

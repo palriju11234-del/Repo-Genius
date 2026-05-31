@@ -3,6 +3,7 @@ Chunker — cleans markdown and splits repo documents into meaningful chunks.
 Uses heading-aware splitting with a fixed-size fallback.
 """
 import re
+import time
 from typing import Any
 
 # Target chunk size in characters (~400 tokens at 4 chars/token)
@@ -93,6 +94,7 @@ def chunk_document(repo: dict[str, Any]) -> list[dict[str, Any]]:
         "language": repo.get("language", "Unknown"),
         "topics": ",".join(repo.get("topics", [])),
         "license": repo.get("license", ""),
+        "indexed_at": repo.get("indexed_at") or time.time(),
     }
 
     chunks = []

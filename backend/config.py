@@ -30,6 +30,8 @@ class Settings(BaseSettings):
 
     # Scheduler
     ingestion_interval_hours: int = 24
+    cleanup_interval_hours: int = 48
+    max_repo_age_hours: int = 48
 
     # OAuth — Google
     google_client_id: str = ""

@@ -99,22 +99,52 @@ def trigger_ingestion(queries: list[str] | None = None):
 _scheduler: BackgroundScheduler | None = None
 
 
-def start_scheduler():
-    """Start the APScheduler background scheduler if interval > 0."""
-    global _scheduler
-    if settings.ingestion_interval_hours <= 0:
-        logger.info("Scheduled ingestion disabled (INGESTION_INTERVAL_HOURS=0)")
-        return
+def run_vector_db_cleanup():
+    """Clean old repositories from the vector database."""
+    from backend.ingestion.vector_store import get_vector_store
 
+    logger.info("Starting scheduled vector database cleanup ...")
+    try:
+        store = get_vector_store()
+        deleted_count = store.delete_old_repositories(settings.max_repo_age_hours)
+        logger.info(f"Vector database cleanup complete. Deleted {deleted_count} chunks.")
+    except Exception as e:
+        logger.exception(f"Vector database cleanup failed: {e}")
+
+
+def start_scheduler():
+    """Start the APScheduler background scheduler if intervals > 0."""
+    global _scheduler
+    
+    has_jobs = False
     _scheduler = BackgroundScheduler()
-    _scheduler.add_job(
-        _run_ingestion,
-        trigger=IntervalTrigger(hours=settings.ingestion_interval_hours),
-        id="ingestion_job",
-        replace_existing=True,
-    )
-    _scheduler.start()
-    logger.info(f"Ingestion scheduler started — runs every {settings.ingestion_interval_hours}h")
+
+    if settings.ingestion_interval_hours > 0:
+        _scheduler.add_job(
+            _run_ingestion,
+            trigger=IntervalTrigger(hours=settings.ingestion_interval_hours),
+            id="ingestion_job",
+            replace_existing=True,
+        )
+        has_jobs = True
+        logger.info(f"Ingestion scheduler started — runs every {settings.ingestion_interval_hours}h")
+    else:
+        logger.info("Scheduled ingestion disabled (INGESTION_INTERVAL_HOURS=0)")
+
+    if settings.cleanup_interval_hours > 0:
+        _scheduler.add_job(
+            run_vector_db_cleanup,
+            trigger=IntervalTrigger(hours=settings.cleanup_interval_hours),
+            id="cleanup_job",
+            replace_existing=True,
+        )
+        has_jobs = True
+        logger.info(f"Cleanup scheduler started — runs every {settings.cleanup_interval_hours}h")
+    else:
+        logger.info("Scheduled cleanup disabled (CLEANUP_INTERVAL_HOURS=0)")
+
+    if has_jobs:
+        _scheduler.start()
 
 
 def stop_scheduler():

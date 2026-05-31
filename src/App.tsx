@@ -22,6 +22,7 @@ function AppShell() {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
   const [repositories, setRepositories] = useState<Repository[]>([]);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   const [filters, setFilters] = useState<FiltersState>({
     difficulty: [],
@@ -33,6 +34,16 @@ function AppShell() {
   const handleSearch = () => {
     if (!searchQuery.trim()) return;
     setView('home');
+    setSearchError(null);
+
+    const words = searchQuery.trim().split(/\s+/);
+    if (words.length === 1 && words[0].length > 0) {
+      setRepositories([]);
+      setSearchError("Explain your query in two or more words.");
+      setHasSearched(true);
+      return;
+    }
+
     setIsSearching(true);
     setHasSearched(true);
 
@@ -47,8 +58,18 @@ function AppShell() {
       credentials: 'include',
       body: JSON.stringify({ query: searchQuery, n_results: 30 }),
     })
-      .then((res) => {
-        if (!res.ok) throw new Error('Search request failed');
+      .then(async (res) => {
+        if (!res.ok) {
+          try {
+            const errData = await res.json();
+            if (errData && errData.detail) {
+              throw new Error(errData.detail);
+            }
+          } catch (e) {
+            // ignore
+          }
+          throw new Error('Search request failed');
+        }
         return res.json();
       })
       .then((data) => {
@@ -108,11 +129,16 @@ function AppShell() {
       })
       .catch((err) => {
         console.error('API Search Error:', err);
-        const fallback = mockRepositories.map(repo => ({
-          ...repo,
-          aiExplanation: `[DEMO MODE] ${repo.aiExplanation}`
-        }));
-        setRepositories(fallback);
+        if (err.message && (err.message.includes("Explain") || err.message.includes("words"))) {
+          setRepositories([]);
+          setSearchError(err.message);
+        } else {
+          const fallback = mockRepositories.map(repo => ({
+            ...repo,
+            aiExplanation: `[DEMO MODE] ${repo.aiExplanation}`
+          }));
+          setRepositories(fallback);
+        }
       })
       .finally(() => {
         setIsSearching(false);
@@ -191,6 +217,7 @@ function AppShell() {
                     repositories={filteredRepositories}
                     isLoading={isSearching}
                     onSelectRepo={setSelectedRepo}
+                    searchError={searchError}
                   />
 
                 </div>
