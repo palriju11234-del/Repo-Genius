@@ -10,6 +10,9 @@ from backend.api.models import (
     IngestRequest, IngestResponse,
     StatusResponse, HealthResponse,
     RepoRecommendation, AISummary,
+    PersonalizedQueryRequest, PersonalizedQueryResponse,
+    PersonalizedRepoRecommendation, ScoreBreakdown,
+    InteractionRequest, InteractionResponse,
 )
 from backend.config import settings
 
@@ -100,6 +103,97 @@ def query_repos(req: QueryRequest):
     except Exception as e:
         logger.exception(f"Query failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── Personalized Query ────────────────────────────────────────────────────────────
+
+@router.post("/query/personalized", response_model=PersonalizedQueryResponse, tags=["Query"])
+def query_personalized(req: PersonalizedQueryRequest):
+    """
+    Submit a query with a developer profile and receive AI-ranked, personalized
+    repository recommendations with explainable AI score breakdowns.
+    """
+    try:
+        from backend.query.rag_engine import get_rag_engine
+        from backend.query.personalized_ranker import rank_personalized
+
+        # Step 1 — Run the base RAG pipeline
+        engine = get_rag_engine()
+        result = engine.query(
+            query=req.query,
+            language=None,   # let personalized ranker handle language scoring
+            topics=None,
+            n_results=req.n_results,
+        )
+
+        # Step 2 — Personalize & re-rank using the weighted scoring engine
+        profile_dict = req.user_profile.model_dump()
+        ranked = rank_personalized(result["recommendations"], profile_dict)
+
+        # Step 3 — Build response models
+        recommendations = []
+        for r in ranked:
+            bd = r.get("score_breakdown", {})
+            recommendations.append(
+                PersonalizedRepoRecommendation(
+                    **{k: v for k, v in r.items()
+                       if k not in ("score_breakdown", "explanation_reasons", "personalized_score", "rank")},
+                    personalized_score=r["personalized_score"],
+                    score_breakdown=ScoreBreakdown(**bd),
+                    explanation_reasons=r["explanation_reasons"],
+                    rank=r["rank"],
+                )
+            )
+
+        # Step 4 — Build a human-readable profile summary
+        p = req.user_profile
+        profile_summary = (
+            f"{p.experience.capitalize()} {p.language} Developer • {p.goal.replace('_', ' ').capitalize()}"
+        )
+
+        summary_data = result.get("summary", {})
+        summary = AISummary(
+            best_for_beginners=summary_data.get("best_for_beginners", ""),
+            best_for_scalability=summary_data.get("best_for_scalability", ""),
+            best_for_learning=summary_data.get("best_for_learning", ""),
+        )
+
+        return PersonalizedQueryResponse(
+            query=result["query"],
+            recommendations=recommendations,
+            summary=summary,
+            source=result["source"],
+            result_count=len(recommendations),
+            profile_summary=profile_summary,
+        )
+
+    except Exception as e:
+        logger.exception(f"Personalized query failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── Interaction Tracking ───────────────────────────────────────────────────────────
+
+# In-memory interaction log (swap for a DB in production)
+_interactions: list[dict] = []
+
+
+@router.post("/interactions", response_model=InteractionResponse, tags=["Tracking"])
+def track_interaction(req: InteractionRequest):
+    """
+    Record a user interaction (viewed / starred / saved) from the Chrome Extension.
+    Used to build a preference profile over time.
+    """
+    _interactions.append({
+        "repo":   req.repo,
+        "action": req.action,
+        "query":  req.query,
+    })
+    logger.info(f"Interaction tracked: {req.action} → {req.repo} (query='{req.query}')")
+    return InteractionResponse(
+        status="ok",
+        message=f"Interaction '{req.action}' on '{req.repo}' recorded.",
+    )
 
 
 # ── Ingest ───────────────────────────────────────────────────────────────────

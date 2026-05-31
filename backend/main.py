@@ -56,11 +56,15 @@ _allowed_origins = list({
     "http://127.0.0.1:5173",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "https://github.com",
     _settings.frontend_url.rstrip("/"),
 })
 
 app.add_middleware(
     CORSMiddleware,
+    # allow_origin_regex covers chrome-extension://<any-id> for the Chrome extension,
+    # plus all normal localhost / github.com origins.
+    allow_origin_regex=r"(chrome-extension://.*|https://github\.com|http://localhost:\d+|http://127\.0\.0\.1:\d+)",
     allow_origins=_allowed_origins,
     allow_credentials=True,          # Required for Set-Cookie to work cross-origin
     allow_methods=["*"],

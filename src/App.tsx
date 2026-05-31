@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { LoginPage } from './components/LoginPage';
@@ -10,6 +10,7 @@ import { ResultsGrid } from './components/ResultsGrid';
 import { ExplanationPanel } from './components/ExplanationPanel';
 import { AboutPage } from './components/AboutPage';
 import { ContactModal } from './components/ContactModal';
+import { ChromeExtensionModal } from './components/ChromeExtensionModal';
 import { mockRepositories, type Repository } from './mockData';
 
 type AppView = 'login' | 'home' | 'about';
@@ -23,6 +24,24 @@ function AppShell() {
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [searchError, setSearchError] = useState<string | null>(null);
+
+  // Chrome Extension modal state
+  const [extModalOpen, setExtModalOpen] = useState(false);
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
+
+  // Show first-time welcome popup once per browser session
+  useEffect(() => {
+    const alreadySeen = localStorage.getItem('rg_ext_modal_seen');
+    if (!alreadySeen) {
+      // Slight delay so page finishes loading
+      const t = setTimeout(() => {
+        setIsFirstVisit(true);
+        setExtModalOpen(true);
+        localStorage.setItem('rg_ext_modal_seen', 'true');
+      }, 1400);
+      return () => clearTimeout(t);
+    }
+  }, []);
 
   const [filters, setFilters] = useState<FiltersState>({
     difficulty: [],
@@ -188,6 +207,7 @@ function AppShell() {
           currentView={view as 'home' | 'about'}
           onNavigate={handleNavigate}
           onReachUs={() => setContactOpen(true)}
+          onAddExtension={() => { setIsFirstVisit(false); setExtModalOpen(true); }}
         />
 
         {/* Main View Renderer */}
@@ -232,6 +252,13 @@ function AppShell() {
         <ExplanationPanel
           repo={selectedRepo}
           onClose={() => setSelectedRepo(null)}
+        />
+
+        {/* Chrome Extension Modal (first-time + on-demand) */}
+        <ChromeExtensionModal
+          isOpen={extModalOpen}
+          onClose={() => setExtModalOpen(false)}
+          isFirstTime={isFirstVisit}
         />
 
         {/* Center Floating Reach-Us Contact Card Modal (z-50) */}

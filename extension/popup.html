@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RepoGenius</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <!-- ── Onboarding Wizard ─────────────────────────────────────── -->
+  <div id="onboarding" class="screen hidden">
+    <div class="onboarding-header">
+      <div class="logo-mark">
+        <img src="icons/icon48.png" alt="RepoGenius" class="logo-img" />
+        <div>
+          <h1 class="logo-title">RepoGenius</h1>
+          <p class="logo-sub">Personalized for you</p>
+        </div>
+      </div>
+
+      <!-- Step progress bar -->
+      <div class="step-bar">
+        <div class="step-indicator active" data-step="1"></div>
+        <div class="step-line"></div>
+        <div class="step-indicator" data-step="2"></div>
+        <div class="step-line"></div>
+        <div class="step-indicator" data-step="3"></div>
+        <div class="step-line"></div>
+        <div class="step-indicator" data-step="4"></div>
+      </div>
+      <p id="step-label" class="step-label">Step 1 of 4</p>
+    </div>
+
+    <!-- Step 1: Experience Level -->
+    <div class="step-panel active" id="step-1">
+      <h2 class="step-title">Your Experience Level</h2>
+      <p class="step-desc">This helps us tailor complexity of recommended projects</p>
+      <div class="option-grid single-col">
+        <button class="opt-btn" data-field="experience" data-val="beginner">
+          <span class="opt-icon">🌱</span>
+          <div class="opt-text">
+            <strong>Beginner</strong>
+            <small>Learning programming basics</small>
+          </div>
+        </button>
+        <button class="opt-btn" data-field="experience" data-val="intermediate">
+          <span class="opt-icon">⚡</span>
+          <div class="opt-text">
+            <strong>Intermediate</strong>
+            <small>Comfortable with core concepts</small>
+          </div>
+        </button>
+        <button class="opt-btn" data-field="experience" data-val="advanced">
+          <span class="opt-icon">🔥</span>
+          <div class="opt-text">
+            <strong>Advanced</strong>
+            <small>Deep expertise in systems</small>
+          </div>
+        </button>
+        <button class="opt-btn" data-field="experience" data-val="professional">
+          <span class="opt-icon">🏆</span>
+          <div class="opt-text">
+            <strong>Professional / Senior</strong>
+            <small>Production-grade developer</small>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: Primary Goal -->
+    <div class="step-panel" id="step-2">
+      <h2 class="step-title">Primary Goal</h2>
+      <p class="step-desc">What are you mainly looking for in repositories?</p>
+      <div class="option-grid two-col">
+        <button class="opt-btn compact" data-field="goal" data-val="learning">📚 Learning</button>
+        <button class="opt-btn compact" data-field="goal" data-val="building">🔨 Building Projects</button>
+        <button class="opt-btn compact" data-field="goal" data-val="hackathons">⚡ Hackathons</button>
+        <button class="opt-btn compact" data-field="goal" data-val="open_source">🌐 Open Source</button>
+        <button class="opt-btn compact" data-field="goal" data-val="production">🚀 Production Dev</button>
+        <button class="opt-btn compact" data-field="goal" data-val="research">🔬 Research</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Languages & Project Types -->
+    <div class="step-panel" id="step-3">
+      <h2 class="step-title">Languages & Interests</h2>
+      <p class="step-desc">Select all that apply — choose at least one language</p>
+      <p class="section-mini-label">Programming Languages</p>
+      <div class="option-grid three-col" id="lang-grid">
+        <button class="opt-btn tag multi" data-field="languages" data-val="Python">Python</button>
+        <button class="opt-btn tag multi" data-field="languages" data-val="JavaScript">JS</button>
+        <button class="opt-btn tag multi" data-field="languages" data-val="TypeScript">TS</button>
+        <button class="opt-btn tag multi" data-field="languages" data-val="Java">Java</button>
+        <button class="opt-btn tag multi" data-field="languages" data-val="C++">C++</button>
+        <button class="opt-btn tag multi" data-field="languages" data-val="Go">Go</button>
+        <button class="opt-btn tag multi" data-field="languages" data-val="Rust">Rust</button>
+        <button class="opt-btn tag multi" data-field="languages" data-val="C#">C#</button>
+        <button class="opt-btn tag multi" data-field="languages" data-val="Other">Other</button>
+      </div>
+      <p class="section-mini-label" style="margin-top:14px">Project Types</p>
+      <div class="option-grid three-col" id="types-grid">
+        <button class="opt-btn tag multi" data-field="project_types" data-val="Web Development">🌐 Web</button>
+        <button class="opt-btn tag multi" data-field="project_types" data-val="AI / ML">🤖 AI/ML</button>
+        <button class="opt-btn tag multi" data-field="project_types" data-val="IoT">📡 IoT</button>
+        <button class="opt-btn tag multi" data-field="project_types" data-val="Cybersecurity">🔒 Security</button>
+        <button class="opt-btn tag multi" data-field="project_types" data-val="Mobile Apps">📱 Mobile</button>
+        <button class="opt-btn tag multi" data-field="project_types" data-val="DevOps">⚙️ DevOps</button>
+        <button class="opt-btn tag multi" data-field="project_types" data-val="Blockchain">⛓️ Blockchain</button>
+        <button class="opt-btn tag multi" data-field="project_types" data-val="Data Science">📊 Data</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Complexity -->
+    <div class="step-panel" id="step-4">
+      <h2 class="step-title">Project Complexity</h2>
+      <p class="step-desc">What kind of codebases do you prefer?</p>
+      <div class="option-grid single-col">
+        <button class="opt-btn" data-field="complexity" data-val="simple">
+          <span class="opt-icon">🧩</span>
+          <div class="opt-text">
+            <strong>Simple & Easy to Understand</strong>
+            <small>Clean, minimal codebases. Great for learning.</small>
+          </div>
+        </button>
+        <button class="opt-btn" data-field="complexity" data-val="moderate">
+          <span class="opt-icon">🏗️</span>
+          <div class="opt-text">
+            <strong>Moderate Complexity</strong>
+            <small>Well-structured projects with good patterns.</small>
+          </div>
+        </button>
+        <button class="opt-btn" data-field="complexity" data-val="advanced">
+          <span class="opt-icon">🔬</span>
+          <div class="opt-text">
+            <strong>Advanced Architecture</strong>
+            <small>Microservices, distributed systems, production-scale.</small>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-row">
+      <button id="btn-back" class="btn-ghost hidden">← Back</button>
+      <button id="btn-next" class="btn-primary" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- ── Profile Card (main popup view) ───────────────────────── -->
+  <div id="profile-view" class="screen hidden">
+    <div class="popup-header">
+      <div class="logo-mark small">
+        <img src="icons/icon48.png" alt="RepoGenius" class="logo-img small" />
+        <span class="logo-title small">RepoGenius</span>
+      </div>
+      <button id="btn-edit-profile" class="btn-ghost small" title="Edit Profile">✏️ Edit</button>
+    </div>
+
+    <!-- Profile summary card -->
+    <div class="profile-card">
+      <div class="profile-badge">
+        <span id="profile-exp-badge" class="exp-badge"></span>
+        <span id="profile-lang-badge" class="lang-badge"></span>
+      </div>
+      <div class="profile-details">
+        <div class="profile-row"><span class="profile-label">Goal</span><span id="pd-goal">—</span></div>
+        <div class="profile-row"><span class="profile-label">Complexity</span><span id="pd-complexity">—</span></div>
+        <div class="profile-row"><span class="profile-label">Interests</span><span id="pd-types">—</span></div>
+      </div>
+    </div>
+
+    <!-- Quick search bar -->
+    <div class="quick-search">
+      <input id="quick-query" type="text" placeholder="Search repos personalized for you…" />
+      <button id="btn-quick-search" class="btn-primary search-btn">→</button>
+    </div>
+
+    <!-- Quick search results -->
+    <div id="quick-results" class="quick-results hidden"></div>
+
+    <!-- Tips -->
+    <div class="tip-card">
+      <p>💡 <strong>Tip:</strong> Search GitHub normally and RepoGenius will automatically inject personalized recommendations above the results.</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row" id="stats-row">
+      <div class="stat-item" id="stat-item-views"><span id="stat-views">0</span><small>Viewed</small></div>
+      <div class="stat-item" id="stat-item-saved"><span id="stat-saved">0</span><small>Saved</small></div>
+      <div class="stat-item" id="stat-item-starred"><span id="stat-starred">0</span><small>Starred</small></div>
+    </div>
+
+    <!-- Collections Section -->
+    <div id="collections-container" class="collections-container">
+      <div class="collections-header">
+        <span id="collections-title" class="collections-title">Saved Repositories</span>
+      </div>
+      <div id="collections-items" class="collections-items">
+        <!-- Dynamic list of repos -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Loading screen ────────────────────────────────────────── -->
+  <div id="loading-screen" class="screen">
+    <div class="loader-wrap">
+      <div class="spinner"></div>
+      <p class="loader-text">Loading RepoGenius…</p>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
